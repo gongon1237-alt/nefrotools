@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Regulación del Filtrado Glomerular</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: #0d1b2a; color: #c8dff0; min-height: 100vh; }
+.app { max-width: 1100px; margin: 0 auto; padding: 20px 14px 40px; }
+h1 { text-align: center; font-size: 1.15rem; color: #7ec8e3; letter-spacing: .08em; text-transform: uppercase; margin-bottom: 18px; font-weight: 700; }
+.card { background: #13253a; border-radius: 16px; border: 1px solid #1e3a5a; }
+.diagram-card { padding: 18px 14px 12px; margin-bottom: 14px; }
+#svg { width: 100%; display: block; }
+.legend { display: flex; gap: 16px; justify-content: center; margin-top: 10px; flex-wrap: wrap; }
+.leg-item { display: flex; align-items: center; gap: 6px; font-size: .7rem; color: #94a3b8; }
+.leg-sw { width: 22px; height: 7px; border-radius: 4px; }
+.gauges-row { display: flex; gap: 12px; margin-bottom: 14px; flex-wrap: wrap; }
+.gauge-card { padding: 14px 10px; flex: 1; min-width: 190px; text-align: center; }
+.gauge-title { font-size: .65rem; text-transform: uppercase; letter-spacing: .1em; color: #7ec8e3; margin-bottom: 6px; }
+.gauge-svg { width: 100%; max-width: 185px; display: block; margin: 0 auto; }
+.gauge-val { font-size: .88rem; font-weight: 700; margin-top: 5px; }
+.subs-card { padding: 16px; margin-bottom: 14px; }
+.subs-hdr-row { display: flex; gap: 10px; margin-bottom: 11px; }
+.subs-hdr { flex: 1; text-align: center; padding: 5px 8px; border-radius: 8px; font-size: .65rem; text-transform: uppercase; letter-spacing: .1em; font-weight: 700; }
+.subs-hdr.con { background: #2a1040; color: #c084fc; border: 1px solid #7e22ce; }
+.subs-hdr.dil { background: #0d2a18; color: #4ade80; border: 1px solid #166534; }
+.subs-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.subs-col { display: flex; flex-direction: column; gap: 7px; }
+.sb { background: #0d1b2a; border: 1.5px solid #1e3a5a; border-radius: 10px; padding: 9px 11px; cursor: pointer; text-align: left; color: #c8dff0; transition: border-color .2s, background .2s; width: 100%; }
+.sb:hover { border-color: #4a7fa5; background: #162840; }
+.sb.ac { background: #2a1040; border-color: #c084fc; }
+.sb.ad { background: #0d2a18; border-color: #4ade80; }
+.sn { font-size: .79rem; font-weight: 600; margin-bottom: 5px; line-height: 1.3; }
+.se { display: flex; gap: 5px; flex-wrap: wrap; }
+.sp { font-size: .59rem; padding: 2px 6px; border-radius: 99px; white-space: nowrap; }
+.sp.c { background: #3b0f2a; color: #f472b6; }
+.sp.d { background: #0f2d18; color: #86efac; }
+.sp.n { background: #1e2a3a; color: #94a3b8; }
+.info-card { padding: 13px 17px; font-size: .82rem; line-height: 1.65; border-left: 3px solid #7ec8e3; }
+#aff-v, #eff-v { transition: fill .5s ease; }
+</style>
+</head>
+<body>
+<div class="app">
+<h1>Regulación del Filtrado Glomerular</h1>
+
+<div class="card diagram-card">
+<svg id="svg" viewBox="0 0 900 285" xmlns="http://www.w3.org/2000/svg">
+<defs>
+  <radialGradient id="gN" cx="38%" cy="32%" r="65%">
+    <stop offset="0%" stop-color="#ff8888"/>
+    <stop offset="70%" stop-color="#cc2244"/>
+    <stop offset="100%" stop-color="#991133"/>
+  </radialGradient>
+  <radialGradient id="gH" cx="38%" cy="32%" r="65%">
+    <stop offset="0%" stop-color="#ffc880"/>
+    <stop offset="70%" stop-color="#e06000"/>
+    <stop offset="100%" stop-color="#cc3000"/>
+  </radialGradient>
+  <radialGradient id="gL" cx="38%" cy="32%" r="65%">
+    <stop offset="0%" stop-color="#aaaaee"/>
+    <stop offset="70%" stop-color="#3355cc"/>
+    <stop offset="100%" stop-color="#112299"/>
+  </radialGradient>
+  <filter id="gF" x="-40%" y="-40%" width="180%" height="180%">
+    <feGaussianBlur stdDeviation="7" result="b"/>
+    <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+  </filter>
+  <marker id="fa" markerWidth="7" markerHeight="7" refX="5.5" refY="3.5" orient="auto">
+    <polygon points="0,0.5 6,3.5 0,6.5" fill="rgba(255,210,210,0.45)"/>
+  </marker>
+</defs>
+
+<!-- Afferent -->
+<polygon id="aff-v" points="80,100 80,210 372,190 372,120" fill="#b91c1c"/>
+<polygon id="aff-h" points="82,102 82,116 370,122 370,122" fill="rgba(255,155,155,0.22)"/>
+<line x1="108" y1="155" x2="345" y2="155" stroke="rgba(255,200,200,0.3)" stroke-width="1.5" stroke-dasharray="7,5" marker-end="url(#fa)"/>
+
+<!-- Glomerulus -->
+<circle id="gw" cx="450" cy="155" r="87" fill="#cc2244" opacity="0.12"/>
+<circle id="gm" cx="450" cy="155" r="78" fill="url(#gN)" filter="url(#gF)"/>
+<path d="M416,133 Q450,120 484,133 Q497,155 484,177 Q450,190 416,177 Q403,155 416,133" fill="none" stroke="rgba(255,180,180,0.38)" stroke-width="2.5"/>
+<path d="M428,143 Q450,134 472,143 Q480,155 472,167 Q450,176 428,167 Q420,155 428,143" fill="none" stroke="rgba(255,180,180,0.25)" stroke-width="1.8"/>
+<text x="450" y="159" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10.5" fill="rgba(255,220,220,0.65)" font-weight="600">Glomérulo</text>
+<text id="gpl" x="450" y="213" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="rgba(0,0,0,0)"> </text>
+
+<!-- Efferent -->
+<polygon id="eff-v" points="528,130 528,180 820,193 820,117" fill="#b91c1c"/>
+<polygon id="eff-h" points="530,132 530,144 818,119 818,119" fill="rgba(255,155,155,0.22)"/>
+<line x1="555" y1="155" x2="800" y2="155" stroke="rgba(255,200,200,0.3)" stroke-width="1.5" stroke-dasharray="7,5" marker-end="url(#fa)"/>
+
+<!-- Labels -->
+<text x="226" y="244" text-anchor="middle" font-family="system-ui,sans-serif" font-size="12.5" fill="#7ec8e3" font-weight="600">Arteriola Aferente</text>
+<text x="674" y="244" text-anchor="middle" font-family="system-ui,sans-serif" font-size="12.5" fill="#7ec8e3" font-weight="600">Arteriola Eferente</text>
+<text id="ast" x="226" y="261" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10.5" fill="#7ec8e3">Estado normal</text>
+<text id="est" x="674" y="261" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10.5" fill="#7ec8e3">Estado normal</text>
+</svg>
+
+<div class="legend">
+  <div class="leg-item"><div class="leg-sw" style="background:#b91c1c"></div>Normal</div>
+  <div class="leg-item"><div class="leg-sw" style="background:#7c3aed"></div>Vasoconstricción</div>
+  <div class="leg-item"><div class="leg-sw" style="background:#16a34a"></div>Vasodilatación</div>
+</div>
+</div>
+
+<!-- Gauges -->
+<div class="gauges-row">
+  <div class="card gauge-card">
+    <div class="gauge-title">Presión Capilar Glomerular</div>
+    <svg class="gauge-svg" viewBox="0 0 200 115">
+      <path d="M20,100 A80,80 0 0,1 180,100" fill="none" stroke="#1e3a5a" stroke-width="18" stroke-linecap="round"/>
+      <path d="M20,100 A80,80 0 0,1 66,28" fill="none" stroke="#3b82f6" stroke-width="18" stroke-linecap="butt" opacity="0.7"/>
+      <path d="M66,28 A80,80 0 0,1 134,28" fill="none" stroke="#22c55e" stroke-width="18" stroke-linecap="butt" opacity="0.7"/>
+      <path d="M134,28 A80,80 0 0,1 180,100" fill="none" stroke="#f97316" stroke-width="18" stroke-linecap="round" opacity="0.7"/>
+      <line id="pndl" x1="100" y1="100" x2="100" y2="28" stroke="white" stroke-width="3" stroke-linecap="round" transform="rotate(0,100,100)"/>
+      <circle cx="100" cy="100" r="5.5" fill="white"/>
+      <text x="18" y="114" font-size="8" fill="#64748b" font-family="sans-serif">Baja</text>
+      <text x="100" y="20" text-anchor="middle" font-size="8" fill="#64748b" font-family="sans-serif">Normal</text>
+      <text x="182" y="114" text-anchor="end" font-size="8" fill="#64748b" font-family="sans-serif">Alta</text>
+    </svg>
+    <div class="gauge-val" id="pval" style="color:#c8dff0">Normal</div>
+  </div>
+  <div class="card gauge-card">
+    <div class="gauge-title">Filtrado Glomerular (FG)</div>
+    <svg class="gauge-svg" viewBox="0 0 200 115">
+      <path d="M20,100 A80,80 0 0,1 180,100" fill="none" stroke="#1e3a5a" stroke-width="18" stroke-linecap="round"/>
+      <path d="M20,100 A80,80 0 0,1 66,28" fill="none" stroke="#3b82f6" stroke-width="18" stroke-linecap="butt" opacity="0.7"/>
+      <path d="M66,28 A80,80 0 0,1 134,28" fill="none" stroke="#22c55e" stroke-width="18" stroke-linecap="butt" opacity="0.7"/>
+      <path d="M134,28 A80,80 0 0,1 180,100" fill="none" stroke="#f97316" stroke-width="18" stroke-linecap="round" opacity="0.7"/>
+      <line id="gndl" x1="100" y1="100" x2="100" y2="28" stroke="white" stroke-width="3" stroke-linecap="round" transform="rotate(0,100,100)"/>
+      <circle cx="100" cy="100" r="5.5" fill="white"/>
+      <text x="18" y="114" font-size="8" fill="#64748b" font-family="sans-serif">Bajo</text>
+      <text x="100" y="20" text-anchor="middle" font-size="8" fill="#64748b" font-family="sans-serif">Normal</text>
+      <text x="182" y="114" text-anchor="end" font-size="8" fill="#64748b" font-family="sans-serif">Alto</text>
+    </svg>
+    <div class="gauge-val" id="gval" style="color:#c8dff0">Normal</div>
+  </div>
+</div>
+
+<!-- Substances -->
+<div class="card subs-card">
+  <div class="subs-hdr-row">
+    <div class="subs-hdr con">↓ Vasoconstrictores</div>
+    <div class="subs-hdr dil">↑ Vasodilatadores</div>
+  </div>
+  <div class="subs-grid">
+    <div class="subs-col" id="cc"></div>
+    <div class="subs-col" id="dc"></div>
+  </div>
+</div>
+
+<div class="card info-card" id="info">
+  Seleccioná una o más sustancias para ver su efecto sobre la hemodinámica glomerular.
+</div>
+</div>
+
+<script>
+// ── DATA ──────────────────────────────────────────────────────────────────
+// aff/eff: positive = dilation, negative = constriction
+// GFR_delta = affSum - effSum  (aff↑ → GFR↑ ; eff constriction → -(-) → GFR↑)
+const SUBS = [
+  {id:'a2', name:'Angiotensina II', cat:'con', aff:-1, eff:-3,
+   note:'La Ang II contrae ambas arteriolas, pero con mayor potencia en la <strong>eferente</strong>. Esto mantiene o incrementa la presión glomerular y el FG ante hipoperfusión renal. Es la base del deterioro agudo del FG con IECAs/ARAs en pacientes con estenosis de arteria renal bilateral o con volumen circulante efectivo críticamente reducido.'},
+  {id:'ne', name:'Norepinefrina / Epinefrina', cat:'con', aff:-2, eff:-1,
+   note:'Contrae predominantemente la arteriola <strong>aferente</strong> → reduce el flujo plasmático renal y la presión glomerular. Mediador central en estados de choque distributivo y hemorrágico; la vasoconstricción renal resultante es el sustrato de la necrosis tubular aguda isquémica.'},
+  {id:'et', name:'Endotelina-1', cat:'con', aff:-2, eff:-2,
+   note:'Vasoconstricción potente en <strong>ambas arteriolas</strong>. Marcadamente elevada en disfunción endotelial (sepsis, eclampsia, nefrotoxicidad por contraste yodado). El efecto neto reduce tanto el flujo plasmático renal como el FG.'},
+  {id:'ad', name:'Adenosina', cat:'con', aff:-3, eff:1,
+   note:'Mediador de la <strong>retroalimentación tubuloglomerular (TGF)</strong>: ante alto flujo de NaCl en la mácula densa, se libera adenosina que contrae fuertemente la aferente y dilata levemente la eferente → caída marcada del FG como mecanismo protector frente a sobrecarga filtrada.'},
+  {id:'dh', name:'ADH (Vasopresina)', cat:'con', aff:-1, eff:-2,
+   note:'Mayor efecto vasoconstrictor en la arteriola <strong>eferente</strong> (receptores V1 vasculares). A concentraciones fisiológicas tiende a mantener o incrementar levemente la presión glomerular, actuando de forma análoga a la Ang II con menor magnitud.'},
+  {id:'pg', name:'Prostaglandinas (PGE₂, PGI₂)', cat:'dil', aff:2, eff:1,
+   note:'Vasodilatación preferente en la arteriola <strong>aferente</strong>. Son protectoras del FG en estados de hipoperfusión (ICC, cirrosis, hipovolemia). Explica la nefrotoxicidad de los <strong>AINEs</strong> en pacientes con activación crónica del eje RAA: al inhibir las prostaglandinas, se pierde la vasodilatación aferente compensatoria.'},
+  {id:'bk', name:'Cininas (Bradicinina)', cat:'dil', aff:2, eff:2,
+   note:'Vasodilatación en <strong>ambas arteriolas</strong> con incremento del flujo plasmático renal y efecto natriurético. Los IECAs potencian su acción al inhibir la ECA (= cininasa II), enzima que también degrada la bradicinina; este mecanismo contribuye al efecto renoprotetor independiente de la presión arterial de los IECAs.'},
+  {id:'np', name:'ANP (Péptido Natriurético Auricular)', cat:'dil', aff:2, eff:-2,
+   note:'Dilata la arteriola <strong>aferente</strong> y contrae la <strong>eferente</strong> → incremento marcado de la presión glomerular y del FG. Respuesta fisiológica a la expansión de volumen (los aurículas liberan ANP al distenderse). Además ejerce acción natriurética directa sobre el túbulo colector y asa de Henle.'},
+  {id:'no', name:'Óxido Nítrico (NO)', cat:'dil', aff:2, eff:1,
+   note:'Vasodilatación <strong>tónica y basal</strong>, predominante en arteriola aferente. Esencial para el mantenimiento del flujo plasmático renal fisiológico. Su déficit crónico en nefropatías (hipertensiva, diabética) contribuye a la hipertensión glomerular y a la progresión del daño renal.'},
+];
+
+// ── STATE ─────────────────────────────────────────────────────────────────
+const sel = new Set();
+let curA=0, curE=0, tgtA=0, tgtE=0, aid=null;
+
+// ── BUTTON BUILD ──────────────────────────────────────────────────────────
+const EL=['↓↓↓ Constricción','↓↓ Constricción','↓ Constricción','Neutro','↑ Dilatación','↑↑ Dilatación','↑↑↑ Dilatación'];
+const pc = v => v<0?'c':v>0?'d':'n';
+const el = v => EL[Math.max(0,Math.min(6,v+3))];
+
+SUBS.forEach(s => {
+  const b = document.createElement('button');
+  b.className = 'sb'; b.id = 'b'+s.id;
+  b.innerHTML = `<div class="sn">${s.name}</div><div class="se"><span class="sp ${pc(s.aff)}">Af: ${el(s.aff)}</span><span class="sp ${pc(s.eff)}">Ef: ${el(s.eff)}</span></div>`;
+  b.onclick = () => tog(s.id);
+  document.getElementById(s.cat==='con'?'cc':'dc').appendChild(b);
+});
+
+// ── TOGGLE ────────────────────────────────────────────────────────────────
+function tog(id) {
+  const s = SUBS.find(x=>x.id===id);
+  if(sel.has(id)){sel.delete(id);document.getElementById('b'+id).className='sb';}
+  else{sel.add(id);document.getElementById('b'+id).className='sb '+(s.cat==='con'?'ac':'ad');}
+  let af=0,ef=0;
+  SUBS.filter(x=>sel.has(x.id)).forEach(x=>{af+=x.aff;ef+=x.eff;});
+  tgtA=Math.max(-8,Math.min(8,af));
+  tgtE=Math.max(-8,Math.min(8,ef));
+  infoUpdate();
+  if(aid) cancelAnimationFrame(aid);
+  loop();
+}
+
+// ── ANIMATION ─────────────────────────────────────────────────────────────
+function loop(){
+  curA+=(tgtA-curA)*.1; curE+=(tgtE-curE)*.1;
+  draw(curA,curE);
+  if(Math.abs(curA-tgtA)>.018||Math.abs(curE-tgtE)>.018) aid=requestAnimationFrame(loop);
+  else{curA=tgtA;curE=tgtE;draw(curA,curE);aid=null;}
+}
+
+// ── DRAW ──────────────────────────────────────────────────────────────────
+const CY=155,AX1=80,AX2=372,EX1=528,EX2=820;
+const ALH=110,ARH=70,ELH=50,ERH=76;
+
+function vf(v){
+  if(v<-3.5)return'#6d28d9';
+  if(v<-1.5)return'#8b5cf6';
+  if(v<-.3) return'#b47cf5';
+  if(v<=.3) return'#b91c1c';
+  if(v<1.5) return'#22c55e';
+  if(v<3.5) return'#16a34a';
+  return'#14532d';
+}
+function st(v){
+  if(v<=-4.5)return'Vasoconstricción severa';
+  if(v<=-2) return'Vasoconstricción moderada';
+  if(v<-.3) return'Vasoconstricción leve';
+  if(v<=.3) return'Estado normal';
+  if(v<2)   return'Vasodilatación leve';
+  if(v<4.5) return'Vasodilatación moderada';
+  return'Vasodilatación severa';
+}
+function sc(v){return v<-.3?'#c084fc':v>.3?'#4ade80':'#7ec8e3';}
+
+function poly(id,x1,x2,lh,rh){
+  document.getElementById(id).setAttribute('points',`${x1},${CY-lh/2} ${x1},${CY+lh/2} ${x2},${CY+rh/2} ${x2},${CY-rh/2}`);
+}
+function hiPoly(id,x1,x2,lh,rh){
+  document.getElementById(id).setAttribute('points',`${x1+2},${CY-lh/2+2} ${x1+2},${CY-lh/2+14} ${x2-2},${CY-rh/2+2} ${x2-2},${CY-rh/2+2}`);
+}
+
+function draw(af,ef){
+  const afF=1+(af/8)*.68, efF=1+(ef/8)*.68;
+  const aLH=Math.max(14,ALH*afF), aRH=Math.max(9,ARH*afF);
+  const eLH=Math.max(9,ELH*efF),  eRH=Math.max(11,ERH*efF);
+
+  poly('aff-v',AX1,AX2,aLH,aRH); hiPoly('aff-h',AX1,AX2,aLH,aRH);
+  poly('eff-v',EX1,EX2,eLH,eRH); hiPoly('eff-h',EX1,EX2,eLH,eRH);
+
+  document.getElementById('aff-v').style.fill=vf(af);
+  document.getElementById('eff-v').style.fill=vf(ef);
+
+  const as=document.getElementById('ast'); as.textContent=st(af); as.setAttribute('fill',sc(af));
+  const es=document.getElementById('est'); es.textContent=st(ef); es.setAttribute('fill',sc(ef));
+
+  const g=af-ef, pN=Math.max(-1,Math.min(1,g/12));
+  const gm=document.getElementById('gm');
+  gm.setAttribute('r',78+pN*13);
+  gm.setAttribute('fill',pN>.18?'url(#gH)':pN<-.18?'url(#gL)':'url(#gN)');
+
+  const gw=document.getElementById('gw');
+  gw.setAttribute('r',87+pN*12);
+  gw.setAttribute('opacity',pN>0?.12+pN*.13:.07);
+  gw.setAttribute('fill',pN>.2?'#ff6600':pN<-.2?'#3355cc':'#cc2244');
+
+  const pl=document.getElementById('gpl');
+  if(Math.abs(g)>3){
+    pl.textContent=g>0?'↑ Presión elevada':'↓ Presión reducida';
+    pl.setAttribute('fill',g>0?'rgba(255,180,90,.85)':'rgba(140,180,255,.85)');
+  } else pl.setAttribute('fill','rgba(0,0,0,0)');
+
+  const cl=Math.max(-12,Math.min(12,g)), ang=(cl/12)*85;
+  document.getElementById('pndl').setAttribute('transform',`rotate(${ang},100,100)`);
+  document.getElementById('gndl').setAttribute('transform',`rotate(${ang},100,100)`);
+
+  function glbl(d,p){
+    if(d>8) return p?'↑↑ Muy elevada':'↑↑ Muy aumentado';
+    if(d>3) return p?'↑ Elevada':'↑ Aumentado';
+    if(d>0) return p?'↑ Levemente elevada':'↑ Levemente aumentado';
+    if(d<-8)return p?'↓↓ Muy reducida':'↓↓ Muy reducido';
+    if(d<-3)return p?'↓ Reducida':'↓ Reducido';
+    if(d<0) return p?'↓ Levemente reducida':'↓ Levemente reducido';
+    return'Normal';
+  }
+  function gc(d){return d>5?'#fb923c':d>0?'#fbbf24':d<-5?'#60a5fa':d<0?'#93c5fd':'#c8dff0';}
+
+  const pv=document.getElementById('pval'); pv.textContent=glbl(cl,true);  pv.style.color=gc(cl);
+  const gv=document.getElementById('gval'); gv.textContent=glbl(cl,false); gv.style.color=gc(cl);
+}
+
+// ── INFO ──────────────────────────────────────────────────────────────────
+function infoUpdate(){
+  const active=SUBS.filter(s=>sel.has(s.id));
+  const el=document.getElementById('info');
+  if(!active.length){el.innerHTML='Seleccioná una o más sustancias para ver su efecto sobre la hemodinámica glomerular.';return;}
+  if(active.length===1){el.innerHTML=`<strong>${active[0].name}:</strong> ${active[0].note}`;return;}
+  const g=tgtA-tgtE;
+  let h=`<strong>Efecto combinado (${active.length} sustancias activas):</strong><br>`;
+  h+=`Art. aferente: <span style="color:${sc(tgtA)}">${st(tgtA)}</span> &nbsp;|&nbsp; `;
+  h+=`Art. eferente: <span style="color:${sc(tgtE)}">${st(tgtE)}</span><br><br>`;
+  if(Math.abs(g)<1.5) h+='Los efectos se equilibran → <strong>presión glomerular y FG aproximadamente normales.</strong>';
+  else if(g>0) h+=`Predominio vasoconstrictor eferente y/o vasodilatador aferente → <strong style="color:#fb923c">↑ Presión glomerular → ↑ FG</strong>.`;
+  else h+=`Predominio vasoconstrictor aferente y/o vasodilatador eferente → <strong style="color:#93c5fd">↓ Presión glomerular → ↓ FG</strong>.`;
+  el.innerHTML=h;
+}
+</script>
+</body>
+</html>
